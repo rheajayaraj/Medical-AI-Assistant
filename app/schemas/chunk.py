@@ -1,0 +1,6 @@
+from pydantic import BaseModel
+
+
+class Chunk(BaseModel):
+    chunk_id: int
+    text: str
