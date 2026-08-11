@@ -6,6 +6,9 @@ from app.api.routes.embeddings import (
     router as embedding_router
 )
 from app.api.routes.vector import router as vector_router
+from app.api.routes.search import (
+    router as search_router
+)
 from app.core.config import settings
 
 app = FastAPI(
@@ -28,3 +31,6 @@ app.include_router(
     embedding_router
 )
 app.include_router(vector_router)
+app.include_router(
+    search_router
+)

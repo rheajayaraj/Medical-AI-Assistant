@@ -8,21 +8,27 @@ class EmbeddingService:
     )
 
     @classmethod
+    def generate_embedding(
+        cls,
+        text: str
+    ):
+
+        return cls.model.encode(
+            text
+        ).tolist()
+
+    @classmethod
     def generate_embeddings(
         cls,
         chunks,
         metadata=None
     ):
 
-        embeddings = []
-
         metadata = metadata or {}
 
-        for chunk in chunks:
+        embeddings = []
 
-            vector = cls.model.encode(
-                chunk["text"]
-            )
+        for chunk in chunks:
 
             embeddings.append({
 
@@ -30,7 +36,9 @@ class EmbeddingService:
 
                 "text": chunk["text"],
 
-                "embedding": vector.tolist(),
+                "embedding": cls.generate_embedding(
+                    chunk["text"]
+                ),
 
                 "metadata": metadata
 
