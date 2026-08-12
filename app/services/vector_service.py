@@ -39,12 +39,12 @@ class VectorService:
             )
 
     def search(
-        self,
-        query_embedding,
-        top_k=3
+    self,
+    query_embedding,
+    top_k=3
     ):
 
-        results = self.collection.query(
+        return self.collection.query(
 
             query_embeddings=[
                 query_embedding
@@ -60,4 +60,15 @@ class VectorService:
 
         )
 
-        return results
+    def document_exists(
+    self,
+    file_hash: str
+    ):
+
+        results = self.collection.get(
+            where={
+                "file_hash": file_hash
+            }
+        )
+
+        return len(results["ids"]) > 0

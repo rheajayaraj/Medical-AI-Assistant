@@ -1,8 +1,9 @@
 from pydantic import BaseModel
+from typing import Optional
 
 
 class DocumentResponse(BaseModel):
-    document_id: str
+    document_id: Optional[str] = None
     filename: str
     pages: int
     total_chunks: int

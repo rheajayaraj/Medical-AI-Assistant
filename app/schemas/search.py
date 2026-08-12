@@ -3,12 +3,12 @@ from pydantic import BaseModel
 
 class SearchRequest(BaseModel):
     query: str
-    top_k: int = 3
 
 
 class SearchResult(BaseModel):
     document: str
     metadata: dict
+    score: float
 
 
 class SearchResponse(BaseModel):

@@ -1,4 +1,4 @@
-import fitz
+import pymupdf
 
 
 class PDFService:
@@ -9,14 +9,20 @@ class PDFService:
         Extract text from every page in a PDF.
         """
 
-        document = fitz.open(pdf_path)
+        document = pymupdf.open(pdf_path)
 
-        text = ""
+        pages = []
 
-        for page in document:
-            text += page.get_text()
+        for page_number, page in enumerate(document):
 
-        return {
-            "pages": len(document),
-            "text": text
-        }
+            pages.append({
+
+                "page": page_number + 1,
+
+                "text": page.get_text()
+
+            })
+
+        document.close()
+
+        return pages

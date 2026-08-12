@@ -1,27 +1,59 @@
 import uuid
 
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
 
 class ChunkService:
 
-    @staticmethod
-    def chunk_text(
-        text: str,
-        chunk_size: int = 500
+    splitter = RecursiveCharacterTextSplitter(
+
+        chunk_size=500,
+
+        chunk_overlap=100,
+
+        separators=[
+            "\n\n",
+            "\n",
+            ". ",
+            " ",
+            ""
+        ]
+
+    )
+
+    @classmethod
+    def chunk_pages(
+        cls,
+        pages
     ):
 
         chunks = []
 
-        start = 0
+        chunk_index = 0
 
-        while start < len(text):
+        for page in pages:
 
-            end = start + chunk_size
+            text = page["text"].strip()
 
-            chunks.append({
-                "chunk_id": str(uuid.uuid4()),
-                "text": text[start:end]
-            })
+            if not text:
+                continue
 
-            start = end
+            split = cls.splitter.split_text(text)
+
+            for chunk in split:
+
+                chunks.append({
+
+                    "chunk_id": str(uuid.uuid4()),
+
+                    "chunk_index": chunk_index,
+
+                    "page": page["page"],
+
+                    "text": chunk
+
+                })
+
+                chunk_index += 1
 
         return chunks
