@@ -1,20 +1,26 @@
 from app.services.search_service import SearchService
 from app.services.llm_service import LLMService
-
+from app.services.question_rewriter import QuestionRewriter
+from app.services.history_service import ChatHistoryService
 
 class RAGService:
 
     def __init__(self):
         self.search_service = SearchService()
 
-    def ask(self, query):
-
-        search_results = self.search_service.search(
-            query=query,
+    def ask(self, query, session_id):
+        history = ChatHistoryService.get_history(
+            session_id
         )
 
-        print('///////////////////////////////////////')
-        print(search_results)
+        rewritten_question = QuestionRewriter.rewrite(
+            question=query,
+            history=history
+        )
+
+        search_results = self.search_service.search(
+            query=rewritten_question,
+        )
 
         if not search_results["results"]:
             return {
@@ -28,36 +34,42 @@ class RAGService:
             page = r["metadata"].get("page", "?")
 
             context += f"""
-        Page {page}
+            Page {page}
 
-        {r["document"]}
+            {r["document"]}
 
-        ------------------------
-        """
+            ------------------------
+            """
 
         prompt = f"""
             You are a medical AI assistant.
 
-            Answer ONLY using the information provided in the context.
+            Answer ONLY using the provided context.
 
-            If the answer is not present in the context, reply exactly:
-
-            "I could not find this information in the uploaded report."
-
-            Do not make up values.
-            Do not use outside medical knowledge.
-            Do not guess.
+            If the answer is not present, say you don't know.
 
             Context:
             {context}
 
-            Question:
+            Current Question:
             {query}
 
             Answer:
             """
 
         answer = LLMService.generate(prompt)
+
+        ChatHistoryService.save_message(
+            session_id,
+            "user",
+            query
+        )
+
+        ChatHistoryService.save_message(
+            session_id,
+            "assistant",
+            answer
+        )
 
         return {
             "answer": answer,

@@ -5,3 +5,4 @@ vector_store/
 data/uploads/
 data/processed/
 *.pyc
+medical_ai.db

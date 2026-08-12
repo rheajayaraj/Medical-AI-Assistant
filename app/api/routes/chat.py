@@ -14,4 +14,7 @@ rag = RAGService()
 )
 def chat(request: ChatRequest):
 
-    return rag.ask(request.question)
+    return rag.ask(
+    query=request.question,
+    session_id=request.session_id
+)
